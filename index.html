@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>NXT Launcher · All your NXT apps in one place</title>
+<meta name="description" content="One home for NXTGEN, NXT:Planner and NXT:Tunes. Each app also works on its own link.">
+<meta name="theme-color" content="#0d2033">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="NXT Launcher">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  :root{
+    --ink:#12242f; --muted:#5b7280; --card:rgba(255,255,255,.78); --line:rgba(18,50,66,.10);
+  }
+  html,body{overflow-x:hidden}
+  body{
+    font-family:"Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+    color:var(--ink); min-height:100vh; padding:26px 16px 40px;
+    background:
+      radial-gradient(520px 340px at 8% -4%, rgba(46,196,182,.28), transparent 62%),
+      radial-gradient(560px 380px at 102% 22%, rgba(138,108,255,.20), transparent 62%),
+      radial-gradient(620px 420px at 50% 108%, rgba(255,71,71,.16), transparent 62%),
+      linear-gradient(180deg,#f4fafb,#eef4f8);
+  }
+  .wrap{max-width:680px;margin:0 auto}
+  header{display:flex;align-items:center;gap:14px}
+  header img{width:56px;height:56px;border-radius:15px;box-shadow:0 8px 20px rgba(10,35,50,.22)}
+  header h1{font-size:25px;letter-spacing:.01em}
+  header .sub{color:var(--muted);font-size:13.5px;margin-top:2px}
+  .greet{margin-top:20px;font-size:15px;font-weight:700}
+  .greet span{color:var(--muted);font-weight:600}
+  .search{margin-top:12px;position:relative}
+  .search svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:18px;height:18px}
+  .search input{
+    width:100%;padding:13px 14px 13px 40px;font-size:15px;font-family:inherit;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:14px;outline:none;
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  }
+  .search input:focus{border-color:rgba(20,120,160,.45);box-shadow:0 0 0 3px rgba(20,140,190,.14)}
+  .grid{margin-top:16px;display:grid;gap:12px}
+  a.app{
+    display:flex;align-items:center;gap:15px;text-decoration:none;color:var(--ink);
+    background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    box-shadow:0 4px 16px rgba(10,40,50,.06);
+    transition:transform .15s ease, box-shadow .15s ease;
+    animation:rise .45s ease both;
+  }
+  a.app:nth-child(2){animation-delay:.06s}
+  a.app:nth-child(3){animation-delay:.12s}
+  a.app:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(10,40,50,.10)}
+  a.app:focus-visible{outline:3px solid rgba(20,140,190,.5);outline-offset:2px}
+  a.app img{width:62px;height:62px;border-radius:16px;flex:0 0 auto;box-shadow:0 5px 14px rgba(10,35,50,.18)}
+  a.app .txt{min-width:0;flex:1}
+  a.app h2{font-size:18.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:999px;color:#fff}
+  .tag.study{background:#7c5cff}.tag.travel{background:#0e9a8b}.tag.music{background:#e8232a}
+  .last{font-size:10.5px;font-weight:800;letter-spacing:.04em;color:#0b7a6d;background:rgba(14,154,139,.13);padding:3px 8px;border-radius:999px;display:none}
+  a.app p{color:var(--muted);font-size:13.5px;margin-top:3px;line-height:1.45}
+  a.app .go{flex:0 0 auto;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:rgba(18,50,66,.07)}
+  a.app .go svg{width:17px;height:17px}
+  .none{display:none;text-align:center;color:var(--muted);font-size:14px;padding:18px 0 4px}
+  footer{margin-top:24px;text-align:center;color:var(--muted);font-size:12.5px;line-height:1.7}
+  footer .credit{font-weight:700;color:var(--ink)}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion: reduce){ *{animation:none !important;transition:none !important} }
+  @media (max-width:400px){ header h1{font-size:22px} a.app img{width:54px;height:54px} a.app h2{font-size:17px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="icon-512.png" alt="NXT Launcher icon">
+    <div>
+      <h1>NXT Launcher</h1>
+      <div class="sub">All your NXT apps, one home</div>
+    </div>
+  </header>
+
+  <div class="greet"><span id="greet-word">Welcome</span> · <span id="greet-date"></span></div>
+
+  <div class="search">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#5b7280" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.8-3.8"/></svg>
+    <input type="search" id="q" placeholder="Search apps" aria-label="Search apps" autocomplete="off">
+  </div>
+
+  <nav class="grid" id="grid" aria-label="NXT apps">
+    <a class="app" href="https://vincenthenry21.github.io/assignment-generator/" data-app="nxtgen" data-search="nxtgen assignment generator study write humanize school college">
+      <img src="nxtgen.png" alt="NXTGEN icon">
+      <div class="txt">
+        <h2>NXTGEN <span class="tag study">Study</span> <span class="last">Last opened</span></h2>
+        <p>Assignment generator and humanizer. Paste a brief, get a structured, formatted document.</p>
+      </div>
+      <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#12242f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a class="app" href="https://vincenthenry21.github.io/ngwe-saung-trip/" data-app="planner" data-search="nxt planner trip travel packing weather money ngwe saung mandalay bangkok">
+      <img src="planner.png" alt="NXT:Planner icon">
+      <div class="txt">
+        <h2>NXT:Planner <span class="tag travel">Travel</span> <span class="last">Last opened</span></h2>
+        <p>Trip planner for 8 destinations: packing lists, live weather, countdown and a money tracker.</p>
+      </div>
+      <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#12242f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+
+    <a class="app" href="https://vincenthenry21.github.io/nxt-tunes/" data-app="tunes" data-search="nxt tunes music mp3 player songs offline playlist henz">
+      <img src="tunes.png" alt="NXT:Tunes icon">
+      <div class="txt">
+        <h2>NXT:Tunes <span class="tag music">Music</span> <span class="last">Last opened</span></h2>
+        <p>Your MP3 player: the HENZ playlist, trending charts, full songs and offline playback.</p>
+      </div>
+      <span class="go" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#12242f" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </a>
+  </nav>
+  <div class="none" id="none">No app matches that search.</div>
+
+  <footer>
+    Every app also keeps its own link and works on its own.<br>
+    Add this launcher to your home screen to keep all three together.<br>
+    <span class="credit">Developed by Thitsar</span>
+  </footer>
+</div>
+
+<script>
+(function(){
+  var now = new Date(), h = now.getHours();
+  document.getElementById('greet-word').textContent = h < 12 ? 'Good morning' : (h < 18 ? 'Good afternoon' : 'Good evening');
+  document.getElementById('greet-date').textContent = now.toLocaleDateString(undefined, { weekday:'long', day:'numeric', month:'long' });
+
+  var KEY = 'nxt-launcher-last';
+  function markLast(){
+    var last = null;
+    try { last = localStorage.getItem(KEY); } catch(e){}
+    document.querySelectorAll('a.app').forEach(function(a){
+      a.querySelector('.last').style.display = (last && a.dataset.app === last) ? 'inline-block' : 'none';
+    });
+  }
+  document.querySelectorAll('a.app').forEach(function(a){
+    a.addEventListener('click', function(){ try { localStorage.setItem(KEY, a.dataset.app); } catch(e){} });
+  });
+  markLast();
+
+  var q = document.getElementById('q'), none = document.getElementById('none');
+  q.addEventListener('input', function(){
+    var needle = q.value.trim().toLowerCase(), shown = 0;
+    document.querySelectorAll('a.app').forEach(function(a){
+      var hay = (a.querySelector('h2').textContent + ' ' + a.dataset.search).toLowerCase();
+      var hit = !needle || hay.indexOf(needle) !== -1;
+      a.style.display = hit ? 'flex' : 'none';
+      if (hit) shown++;
+    });
+    none.style.display = shown ? 'none' : 'block';
+  });
+})();
+</script>
+</body>
+</html>
